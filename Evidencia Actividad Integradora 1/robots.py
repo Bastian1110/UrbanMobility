@@ -2,8 +2,9 @@
 Script de Agentes, Robot y Caja
 Modelo del Medio Ambiente
 
-"""
+Autores: Adrian Bravo López, Marco Barbosa Maruri
 
+"""
 
 from mesa import Agent, Model
 from mesa.time import RandomActivation
@@ -16,6 +17,7 @@ class Robot(Agent):
     las cuatro celdas adjacentes en cuadricula lo cual significa que puede saber si un espacio esta
     ocupado o libre, finalmente el robot tambien puede saber si trae una caja.
     """
+
 
 class Caja(Agent):
     """
