@@ -17,14 +17,17 @@ class Robot(Agent):
     las cuatro celdas adjacentes en cuadricula lo cual significa que puede saber si un espacio esta
     ocupado o libre, finalmente el robot tambien puede saber si trae una caja.
     """
+    def __init__(self,unique_id,model):
 
 
 class Caja(Agent):
     """
     Es una caja. Puede ser movida por un robot.
     """
+    def __init__(self,unique_id,model):
 
 class Enviorment(Model):
     """
     Crea un ambiente con 5 robots y un numero 'X' de cajas.
     """
+    def __init__(self):
