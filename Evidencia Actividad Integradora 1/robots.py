@@ -18,7 +18,21 @@ class Robot(Agent):
     ocupado o libre, finalmente el robot tambien puede saber si trae una caja.
     """
     def __init__(self,unique_id,model):
+        super().__init__(unique_id, model)
 
+    def step(self):
+        self.move()
+    
+
+    def move(self):
+        possible_steps = self.model.grid.get_neighborhood(self.pos, True, True)
+        chosen_step = self.random.choice(possible_steps)
+        position = self.model.grid.get_cell_list_contents([chosen_step])
+        robot = [obj for obj in position if isinstance(obj, Robot)]
+        if len(robot) < 1:
+            self.model.grid.move_agent(self, chosen_step)
+
+    def grab_box(self):
 
 class Caja(Agent):
     """
