@@ -3,6 +3,8 @@ from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from box import Box
 from robot import Robot
+
+
 class robotModel(Model):
     """
     Crea un ambiente con 5 robots y un numero x de cajas
@@ -33,5 +35,3 @@ class robotModel(Model):
 
     def step(self):
         self.schedule.step()
-
-    pass

@@ -1,14 +1,5 @@
-"""
-Script de Agentes, Robot y Caja
-Modelo del Medio Ambiente
-
-Autores: Adrian Bravo López, Marco Barbosa Maruri
-
-"""
-
 from mesa import Agent
-from mesa.time import RandomActivation
-from mesa.space import Grid
+
 
 from box import Box
 
@@ -30,13 +21,13 @@ class Robot(Agent):
             self.move()
             self.grab_box()
         elif self.cajas:
-            if self.pos == (self.obj_x + 1,self.obj_y):
+            objNeighboor = self.model.grid.get_neighborhood(self.model.actualStorage, False, False)
+            if self.pos in objNeighboor:
                 self.place_box()
             else:
                self.move_goal()
-               if self.pos == (self.obj_x + 1,self.obj_y):
+               if self.pos in objNeighboor:
                     self.place_box()
-        
 
     def move(self):
         possible_steps = self.model.grid.get_neighborhood(self.pos, False, True)
@@ -48,59 +39,37 @@ class Robot(Agent):
 
     def move_goal(self):
         position = self.pos
-        #print(position[0])
-        #print(position[1])
-        #if position[0] > self.obj_x + 1 or position[0] < self.obj_x + 1:
-        #    if position[0] > self.obj_x + 1:
-        #        needed_step = self.model.grid.get_cell_list_contents([(position[0]-1,position[1])])
-        #        possible_steps = self.model.grid.get_neighborhood(self.pos, False, True)
-        #        if len(needed_step) < 1:
-        #            self.model.grid.move_agent(self,(position[0]-1,position[1]))
-        #            self.model.grid.move_agent(self.caj,(position[0]-1,position[1]))
-        #    else:
-        #        needed_step = self.model.grid.get_cell_list_contents([(position[0]+1,position[1])])
-        #        possible_steps = self.model.grid.get_neighborhood(self.pos, False, True)
-        #        if len(needed_step) < 1:
-        #            self.model.grid.move_agent(self,(position[0]+ 1,position[1]))
-        #            self.model.grid.move_agent(self.caj,(position[0]+1,position[1]))
-        #    
-        #elif position[1] > self.obj_y:
-        #    needed_step = self.model.grid.get_cell_list_contents([(position[0],position[1]-1)])
-        #    if len(needed_step) < 1:
-        #        self.model.grid.move_agent(self,(position[0],position[1]-1))
-        #        self.model.grid.move_agent(self.caj,(position[0],position[1]-1))
-        if position[0] != self.model.actualStorage[0] + 1:
-            direccion = self.model.actualStorage[0] - position[0] 
-            self.model.grid.move_agent(self,(position[0]-1 if direccion < 0 else position[0] + 1,position[1]))
-            self.model.grid.move_agent(self.caj,(position[0]-1 if direccion < 0 else position[0] + 1,position[1]))
-        elif (position[1] != self.model.actualStorage[1]):
-            direccion = self.model.actualStorage[1] - position[1] 
-            self.model.grid.move_agent(self,(position[1]-1 if direccion < 0 else position[1] + 1,position[1]))
-            self.model.grid.move_agent(self.caj,(position[1]-1 if direccion < 0 else position[1] + 1,position[1]))
-
-
-        
+        moved = False
+        direccionX = -1 if (self.model.actualStorage[0] - position[0] < 0) else 1 
+        direccionY = -1 if (self.model.actualStorage[1] - position[1] < 0) else 1 
+        posibleCellX = (position[0] + direccionX , position[1])
+        posibleCellY = (position[0], position[1] + direccionY)
+        if position != self.model.actualStorage:
+            if self.model.grid.is_cell_empty(posibleCellX) and position[0] != self.model.actualStorage[0]:
+                self.model.grid.move_agent(self, posibleCellX)
+                self.model.grid.move_agent(self.caj, posibleCellX)
+            else:
+                self.model.grid.move_agent(self, posibleCellY)
+                self.model.grid.move_agent(self.caj, posibleCellY)
+  
 
     def grab_box(self):
         possible_boxes = self.model.grid.get_neighborhood(self.pos, False, True)
-        print(possible_boxes)
         for obj in possible_boxes:
             print(obj)
             obj2 = self.model.grid.get_cell_list_contents([obj])
             C = [obj3 for obj3 in obj2 if isinstance(obj3, Box)]
             if len(C) > 0 and obj != self.model.actualStorage:
                 caja_agarrada = self.random.choice(C)
-                print("Encontro caja")
                 self.caj = caja_agarrada
                 self.cajas = True
                 self.model.grid.move_agent(self.caj,self.pos)
                 break
             
     def place_box(self):
+        self.model.grid.move_agent(self.caj,self.model.actualStorage)
+        self.cajas = False
         boxes = self.model.grid.get_cell_list_contents([self.model.actualStorage])
-        if len(boxes) < 5:
-            self.model.grid.move_agent(self.caj,self.model.actualStorage)
-            self.cajas = False
-        else:
-            self.model.actualStorage[1] += 1
-        
+        if len(boxes) == 4:
+            print("New Storage : ",(self.model.actualStorage[0], self.model.actualStorage[1] + 1))
+            self.model.actualStorage = (self.model.actualStorage[0] + 1, self.model.actualStorage[1])
