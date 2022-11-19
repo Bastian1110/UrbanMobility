@@ -1,8 +1,6 @@
-from mesa import Agent, Model
-from mesa.time import RandomActivation
-from mesa.space import Grid
+from mesa import Agent
 
-class Caja(Agent):
+class Box(Agent):
     """
     Es una caja. Puede ser movida por un robot.
     """
