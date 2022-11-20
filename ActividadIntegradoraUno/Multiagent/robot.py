@@ -59,7 +59,11 @@ class Robot(Agent):
             print(obj)
             obj2 = self.model.grid.get_cell_list_contents([obj])
             C = [obj3 for obj3 in obj2 if isinstance(obj3, Box)]
-            if len(C) > 0 and obj != self.model.actualStorage:
+            state = True
+            for cor in self.model.StorageList:
+                if cor == obj:
+                    state = False
+            if len(C) > 0 and state:
                 caja_agarrada = self.random.choice(C)
                 self.caj = caja_agarrada
                 self.cajas = True
@@ -70,6 +74,8 @@ class Robot(Agent):
         self.model.grid.move_agent(self.caj,self.model.actualStorage)
         self.cajas = False
         boxes = self.model.grid.get_cell_list_contents([self.model.actualStorage])
-        if len(boxes) == 4:
+        if len(boxes) == 5:
             print("New Storage : ",(self.model.actualStorage[0], self.model.actualStorage[1] + 1))
             self.model.actualStorage = (self.model.actualStorage[0] + 1, self.model.actualStorage[1])
+            self.model.index = self.model.index + 1
+            self.model.StorageList.append(self.model.actualStorage)
