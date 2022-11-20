@@ -15,6 +15,7 @@ class Robot(Agent):
         self.cajas = False
         self.obj_x = model.actualStorage[0]
         self.obj_y = model.actualStorage[1]
+        print("Agent : ", unique_id, " Created!")
 
     def step(self):
         if not(self.cajas):
@@ -74,7 +75,6 @@ class Robot(Agent):
         self.cajas = False
         boxes = self.model.grid.get_cell_list_contents([self.model.actualStorage])
         if len(boxes) == 5:
-            print("New Storage : ",(self.model.actualStorage[0], self.model.actualStorage[1] + 1))
             self.model.actualStorage = (self.model.actualStorage[0] + 1, self.model.actualStorage[1])
             self.model.index = self.model.index + 1
             self.model.StorageList.append(self.model.actualStorage)
