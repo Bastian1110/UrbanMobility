@@ -17,6 +17,9 @@ class robotModel(Model):
         self.schedule = RandomActivation(self)
         self.running = True
         self.actualStorage = (0,0)
+        self.StorageList = []
+        self.StorageList.append(self.actualStorage)
+        self.index = 0
 
         #Crear robots
         for i in range(1):
