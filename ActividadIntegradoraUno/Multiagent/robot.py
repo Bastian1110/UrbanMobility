@@ -56,7 +56,6 @@ class Robot(Agent):
     def grab_box(self):
         possible_boxes = self.model.grid.get_neighborhood(self.pos, False, True)
         for obj in possible_boxes:
-            print(obj)
             obj2 = self.model.grid.get_cell_list_contents([obj])
             C = [obj3 for obj3 in obj2 if isinstance(obj3, Box)]
             state = True
