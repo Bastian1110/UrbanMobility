@@ -6,11 +6,7 @@ from robot import Robot
 
 
 class robotModel(Model):
-    """
-    Crea un ambiente con 5 robots y un numero x de cajas
-    """
-
-    def __init__(self,nCajas,width,height):
+    def __init__(self, nCajas, nRobots, width, height):
         super().__init__()
         self.numcajas = nCajas
         self.grid = MultiGrid(width, height, False)
@@ -22,7 +18,7 @@ class robotModel(Model):
         self.index = 0
 
         #Crear robots
-        for i in range(1):
+        for i in range(nRobots):
             robot = Robot(self.next_id(), self)
             self.schedule.add(robot)
 
