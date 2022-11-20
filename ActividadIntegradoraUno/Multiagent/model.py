@@ -1,5 +1,5 @@
 from mesa import Model
-from mesa.time import RandomActivation
+from mesa.time import SimultaneousActivation
 from mesa.space import MultiGrid
 from box import Box
 from robot import Robot
@@ -10,12 +10,13 @@ class robotModel(Model):
         super().__init__()
         self.numcajas = nCajas
         self.grid = MultiGrid(width, height, False)
-        self.schedule = RandomActivation(self)
+        self.schedule = SimultaneousActivation(self)
         self.running = True
         self.actualStorage = (0,0)
         self.StorageList = []
         self.StorageList.append(self.actualStorage)
         self.index = 0
+        self.running = True 
 
         #Crear robots
         for i in range(nRobots):
@@ -28,7 +29,7 @@ class robotModel(Model):
 
         for i in lugarCajas:
             if self.grid.is_cell_empty((i[1],i[2])):
-                caja = Box((i[1],i[2]), self,show=True)
+                caja = Box(self.next_id(),(i[1],i[2]), self,show=True)
 
                 self.grid.place_agent(caja, (i[1],i[2]))
 
