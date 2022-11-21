@@ -64,7 +64,7 @@ public class GameController : MonoBehaviour
         boxAgents = new Dictionary<string, GameObject>();
 
         floor.transform.localScale = new Vector3((float)width / 10, 1, (float)height / 10);
-        floor.transform.localPosition = new Vector3((float)width / 2 - 0.5f, 0, (float)height / 2 - 0.5f);
+        floor.transform.localPosition = new Vector3((float)width / 2 - 0.5f, 1, (float)height / 2 - 0.5f);
 
         timer = timeToUpdate;
 
