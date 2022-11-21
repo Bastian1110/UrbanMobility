@@ -34,7 +34,8 @@ class Robot(Agent):
         chosen_step = self.random.choice(possible_steps)
         position = self.model.grid.get_cell_list_contents([chosen_step])
         robot = [obj for obj in position if isinstance(obj, Robot)]
-        if len(robot) < 1:
+        box = [obj for obj in position if isinstance(obj, Box)]
+        if len(robot) < 1 and len(box) < 1:
             self.model.grid.move_agent(self, chosen_step)
 
     def move_goal(self):
@@ -48,7 +49,7 @@ class Robot(Agent):
             if self.model.grid.is_cell_empty(posibleCellX) and position[0] != self.model.actualStorage[0]:
                 self.model.grid.move_agent(self, posibleCellX)
                 self.model.grid.move_agent(self.caj, posibleCellX)
-            else:
+            elif self.model.grid.is_cell_empty(posibleCellY) and position[1] != self.model.actualStorage[1]:
                 self.model.grid.move_agent(self, posibleCellY)
                 self.model.grid.move_agent(self.caj, posibleCellY)
   
@@ -64,9 +65,11 @@ class Robot(Agent):
                     state = False
             if len(C) > 0 and state:
                 caja_agarrada = self.random.choice(C)
-                self.caj = caja_agarrada
-                self.cajas = True
-                self.model.grid.move_agent(self.caj,self.pos)
+                if not(caja_agarrada.grabbed):
+                    self.caj = caja_agarrada
+                    self.cajas = True
+                    caja_agarrada.grabbed = True
+                    self.model.grid.move_agent(self.caj,self.pos)
                 break
             
     def place_box(self):

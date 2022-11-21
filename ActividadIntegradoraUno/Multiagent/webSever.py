@@ -5,7 +5,7 @@ from robot import Robot
 from box import Box
 
 
-numberRobots = 2
+numberRobots = 5
 numberBoxes = 10
 width = 10
 height = 10

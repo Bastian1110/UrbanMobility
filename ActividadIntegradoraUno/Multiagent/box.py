@@ -5,6 +5,7 @@ class Box(Agent):
         super().__init__(unique_id, model)
         self.pos = pos
         self.show = show
+        self.grabbed = False
 
     def step(self):
         pass

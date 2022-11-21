@@ -27,7 +27,7 @@ def cleaning_port(agent):
 
 model_params = {
     "nCajas" : NumberInput("Boxes", value=30),
-    "nRobots" : NumberInput("Robots", value=2),
+    "nRobots" : NumberInput("Robots", value=5),
     "width":10,
     "height":10
 }
