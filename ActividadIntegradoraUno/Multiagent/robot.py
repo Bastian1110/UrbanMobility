@@ -15,7 +15,6 @@ class Robot(Agent):
         self.cajas = False
         self.obj_x = model.actualStorage[0]
         self.obj_y = model.actualStorage[1]
-        print("Agent : ", unique_id, " Created!")
 
     def step(self):
         if not(self.cajas):
