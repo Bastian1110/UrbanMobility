@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using UnityEngine.Networking;
 
 [Serializable]
@@ -196,11 +195,10 @@ public class GameController : MonoBehaviour
 
             foreach (AgentData box in boxesData.positions)
             {
-                Vector3 newAgentPosition = new Vector3(box.x, box.y, box.z);
+                Vector3 newAgentPosition = new Vector3(box.x, box.y + (0.5f), box.z);
 
                 if (!started)
                 {
-                    print("New Box!");
                     boxPrevPositions[box.id] = newAgentPosition;
                     boxAgents[box.id] = Instantiate(boxPrefab, newAgentPosition, Quaternion.identity);
                 }
