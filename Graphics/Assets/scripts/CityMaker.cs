@@ -69,7 +69,8 @@ public class CityMaker : MonoBehaviour
             } else if (tiles[i] == '#') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(buildingPrefab, position, Quaternion.identity);
-                tile.transform.localScale = new Vector3(1, Random.Range(0.5f, 2.0f), 1);
+                Vector3 scale = buildingPrefab.transform.localScale;
+                tile.transform.localScale = scale;
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == '\n') {
