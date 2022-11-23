@@ -12,26 +12,26 @@ class robotModel(Model):
         self.grid = MultiGrid(width, height, False)
         self.schedule = SimultaneousActivation(self)
         self.running = True
-        self.actualStorage = (0,0)
+        self.actualStorage = (0, 0)
         self.StorageList = []
         self.StorageList.append(self.actualStorage)
         self.index = 0
-        self.running = True 
+        self.running = True
 
-        #Crear robots
-        for i in range(nRobots):
+        lugarRobots = self.random.sample(list(self.grid.coord_iter()), nRobots)
+
+        for i in lugarRobots:
             robot = Robot(self.next_id(), self)
             self.schedule.add(robot)
+            self.grid.place_agent(robot, (i[1], i[2]))
 
-            self.grid.place_agent(robot, (1,1))
-
-        lugarCajas = self.random.sample(list(self.grid.coord_iter()),self.numcajas)
+        lugarCajas = self.random.sample(list(self.grid.coord_iter()), self.numcajas)
 
         for i in lugarCajas:
-            if self.grid.is_cell_empty((i[1],i[2])):
-                caja = Box(self.next_id(),(i[1],i[2]), self,show=True)
+            if self.grid.is_cell_empty((i[1], i[2])):
+                caja = Box(self.next_id(), (i[1], i[2]), self, show=True)
 
-                self.grid.place_agent(caja, (i[1],i[2]))
+                self.grid.place_agent(caja, (i[1], i[2]))
 
     def step(self):
         self.schedule.step()
