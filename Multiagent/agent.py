@@ -9,7 +9,7 @@ class Car(Agent):
         direction: Randomly chosen direction chosen from one of eight directions
     """
 
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, model, initialPosition, destination):
         """
         Creates a new random agent.
         Args:
@@ -17,17 +17,39 @@ class Car(Agent):
             model: Model reference for the agent
         """
         super().__init__(unique_id, model)
+        self.pos = initialPosition
+        self.destination = destination
+        self.isMoving = False
+        self.direction = [0, 0]
 
     def move(self):
-        """
-        Determines if the agent can move in the direction that was chosen
-        """
-        self.model.grid.move_to_empty(self)
+        self.model.grid.move_agent(
+            self, (self.pos[0] + self.direction[0], self.pos[1] + self.direction[1])
+        )
+        self.setDirection()
+        # TODO : Get if there is a traffic light near the car
+
+    def setDirection(self):
+        contents = self.model.grid.get_cell_list_contents([self.pos])
+        road = [r for r in contents if isinstance(r, Road)][0]
+        self.direction = road.direction
+
+    def getRoads(self):
+        possible_boxes = self.model.grid.get_neighborhood(self.pos, False, False)
+        roads = []
+        for cell in possible_boxes:
+            contents = self.model.grid.get_cell_list_contents([cell])
+            road = [r for r in contents if isinstance(r, Road)]
+            roads = roads + road
+        return roads
 
     def step(self):
-        """
-        Determines the new direction it will take, and then moves
-        """
+        if not self.isMoving:
+            road = self.getRoads()
+            self.model.grid.move_agent(self, road[0].pos)
+            self.setDirection()
+            self.isMoving = True
+            return
         self.move()
 
 
@@ -87,7 +109,7 @@ class Road(Agent):
     Road agent. Determines where the cars can move, and in which direction.
     """
 
-    def __init__(self, unique_id, model, direction="Left"):
+    def __init__(self, unique_id, model, direction=[0, 0]):
         """
         Creates a new road.
         Args:

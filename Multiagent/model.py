@@ -12,13 +12,14 @@ class RandomModel(Model):
         N: Number of agents in the simulation
     """
 
-    def __init__(self, N):
+    def __init__(self, cars, city):
 
         dataDictionary = json.load(open("mapDictionary.json"))
 
         self.traffic_lights = []
+        self.destinantions = []
 
-        with open("base.txt") as baseFile:
+        with open(city) as baseFile:
             lines = baseFile.readlines()
             self.width = len(lines[0]) - 1
             self.height = len(lines)
@@ -50,8 +51,19 @@ class RandomModel(Model):
                     elif col == "D":
                         agent = Destination(f"d_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
+                        self.destinantions.append(agent)
 
-        self.num_agents = N
+        for i in range(cars):
+            randomUbication = True
+            randomDestination = True
+            while randomDestination == randomUbication:
+                randomUbication = self.random.choice(self.destinantions)
+                randomDestination = self.random.choice(self.destinantions)
+            agent = Car(f"c_{i}", self, randomUbication.pos, randomDestination.pos)
+            self.grid.place_agent(agent, randomUbication.pos)
+            self.schedule.add(agent)
+
+        self.num_agents = cars
         self.running = True
 
     def step(self):
