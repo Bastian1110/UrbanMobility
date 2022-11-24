@@ -1,18 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
 
 public class CityMaker : MonoBehaviour
 {
+    public List<GameObject> buildingsPrefab;
     [SerializeField] TextAsset layout;
     [SerializeField] GameObject roadPrefab;
-    [SerializeField] GameObject buildingPrefab;
+    
+    //[SerializeField] GameObject buildingPrefab;
     [SerializeField] GameObject semaphorePrefab;
     [SerializeField] int tileSize;
+
+    private int randomIndex;
+    
 
     // Start is called before the first frame update
     void Start()
     {
+        
         MakeTiles(layout.text);
     }
 
@@ -24,13 +32,14 @@ public class CityMaker : MonoBehaviour
 
     void MakeTiles(string tiles)
     {
+        
         int x = 0;
         // Mesa has y 0 at the bottom
         // To draw from the top, find the rows of the file
         // and move down
         // Remove the last enter, and one more to start at 0
         int y = tiles.Split('\n').Length - 2;
-        Debug.Log(y);
+        //Debug.Log(y);
 
         Vector3 position;
         GameObject tile;
@@ -61,15 +70,17 @@ public class CityMaker : MonoBehaviour
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'D') {
+                randomIndex = Random.Range(0, buildingsPrefab.Count());
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(buildingPrefab, position, Quaternion.Euler(0, 90, 0));
+                tile = Instantiate(buildingsPrefab[randomIndex], position, Quaternion.Euler(0, 90, 0));
                 tile.GetComponent<Renderer>().materials[0].color = Color.red;
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == '#') {
+                randomIndex = Random.Range(0, buildingsPrefab.Count());
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(buildingPrefab, position, Quaternion.identity);
-                Vector3 scale = buildingPrefab.transform.localScale;
+                tile = Instantiate(buildingsPrefab[randomIndex], position, Quaternion.identity);
+                Vector3 scale = buildingsPrefab[randomIndex].transform.localScale;
                 tile.transform.localScale = scale;
                 tile.transform.parent = transform;
                 x += 1;
