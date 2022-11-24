@@ -39,14 +39,14 @@ def agent_portrayal(agent):
     return portrayal
 
 
-pathToCity = "test.txt"
+pathToCity = "base.txt"
 
 with open(pathToCity) as baseFile:
     lines = baseFile.readlines()
     width = len(lines[0]) - 1
     height = len(lines)
 
-model_params = {"cars": 1, "city": pathToCity}
+model_params = {"cars": 5, "city": pathToCity}
 
 print(width, height)
 grid = CanvasGrid(agent_portrayal, width, height, 500, 500)
