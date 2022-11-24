@@ -1,5 +1,5 @@
 from agent import *
-from model import RandomModel
+from model import UrbanMobility
 from mesa.visualization.modules import CanvasGrid, BarChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 
@@ -39,20 +39,19 @@ def agent_portrayal(agent):
     return portrayal
 
 
-width = 0
-height = 0
+pathToCity = "base.txt"
 
-with open("base.txt") as baseFile:
+with open(pathToCity) as baseFile:
     lines = baseFile.readlines()
     width = len(lines[0]) - 1
     height = len(lines)
 
-model_params = {"cars": 1, "city": "base.txt"}
+model_params = {"cars": 5, "city": pathToCity}
 
 print(width, height)
 grid = CanvasGrid(agent_portrayal, width, height, 500, 500)
 
-server = ModularServer(RandomModel, [grid], "Traffic Base", model_params)
+server = ModularServer(UrbanMobility, [grid], "Traffic Base", model_params)
 
 server.port = 8521  # The default
 server.launch()
