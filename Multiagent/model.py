@@ -5,7 +5,7 @@ from agent import *
 import json
 
 
-class RandomModel(Model):
+class UrbanMobility(Model):
     """
     Creates a new model with random agents.
     Args:

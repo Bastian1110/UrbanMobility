@@ -23,16 +23,65 @@ class Car(Agent):
         self.direction = [0, 0]
 
     def move(self):
-        self.model.grid.move_agent(
-            self, (self.pos[0] + self.direction[0], self.pos[1] + self.direction[1])
+        trafficLigt = self.lookForLights()
+        if not trafficLigt[0]:
+            carsNear = self.lookForCars()
+            if not carsNear:
+                self.model.grid.move_agent(
+                    self,
+                    (self.pos[0] + self.direction[0], self.pos[1] + self.direction[1]),
+                )
+                self.setDirection()
+                return
+            return
+        if trafficLigt[0]:
+            if trafficLigt[1]:
+                self.model.grid.move_agent(
+                    self,
+                    (self.pos[0] + self.direction[0], self.pos[1] + self.direction[1]),
+                )
+                self.setDirection()
+                return
+            if not trafficLigt[1]:
+                return
+
+    def lookForLights(self):
+        posiblePosition = (
+            self.pos[0] + self.direction[0],
+            self.pos[1] + self.direction[1],
         )
-        self.setDirection()
-        # TODO : Get if there is a traffic light near the car
+        contents = self.model.grid.get_cell_list_contents([posiblePosition])
+        trafficLight = [t for t in contents if isinstance(t, Traffic_Light)]
+        if len(trafficLight) == 1:
+            return [True, trafficLight[0].state]
+        return [False, False]
+
+    def lookForCars(self):
+        posiblePosition = (
+            self.pos[0] + (2 * self.direction[0]),
+            self.pos[1] + (2 * self.direction[1]),
+        )
+        if (
+            posiblePosition[0] >= self.model.width
+            or posiblePosition[1] >= self.model.height
+        ):
+            return False
+        contents = self.model.grid.get_cell_list_contents([posiblePosition])
+        nearCar = [c for c in contents if isinstance(c, Car)]
+        if len(nearCar) == 1:
+            return True
+        return False
 
     def setDirection(self):
         contents = self.model.grid.get_cell_list_contents([self.pos])
-        road = [r for r in contents if isinstance(r, Road)][0]
-        self.direction = road.direction
+        road = [r for r in contents if isinstance(r, Road)]
+        trafficLigth = [t for t in contents if isinstance(t, Traffic_Light)]
+        if len(trafficLigth) == 1:
+            self.direction = self.direction
+            return
+        if len(road) == 1:
+            self.direction = road[0].direction
+            return
 
     def getRoads(self):
         possible_boxes = self.model.grid.get_neighborhood(self.pos, False, False)
