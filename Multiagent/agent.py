@@ -57,19 +57,25 @@ class Car(Agent):
         return [False, False]
 
     def lookForCars(self):
-        posiblePosition = (
-            self.pos[0] + (2 * self.direction[0]),
-            self.pos[1] + (2 * self.direction[1]),
-        )
-        if (
-            posiblePosition[0] >= self.model.width
-            or posiblePosition[1] >= self.model.height
-        ):
-            return False
-        contents = self.model.grid.get_cell_list_contents([posiblePosition])
-        nearCar = [c for c in contents if isinstance(c, Car)]
-        if len(nearCar) == 1:
-            return True
+        posiblePositions = [
+            (
+                self.pos[0] + (self.direction[0]),
+                self.pos[1] + (self.direction[1]),
+            ),
+            (
+                self.pos[0] + (2 * self.direction[0]),
+                self.pos[1] + (2 * self.direction[1]),
+            ),
+        ]
+        for position in posiblePositions:
+            if position[0] >= self.model.width or position[1] >= self.model.height:
+                return False
+                break
+            contents = self.model.grid.get_cell_list_contents([position])
+            nearCar = [c for c in contents if isinstance(c, Car)]
+            if len(nearCar) == 1:
+                return True
+                break
         return False
 
     def setDirection(self):
