@@ -23,6 +23,7 @@ class UrbanMobility(Model):
             lines = baseFile.readlines()
             self.width = len(lines[0]) - 1
             self.height = len(lines)
+            print(f"Width : {self.width}, Height : {self.height}")
 
             self.grid = MultiGrid(self.width, self.height, torus=False)
             self.schedule = RandomActivation(self)
