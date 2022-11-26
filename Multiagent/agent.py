@@ -21,6 +21,7 @@ class Car(Agent):
         self.destination = destination
         self.isMoving = False
         self.direction = [0, 0]
+        print(f"X {self.destination[0]} Y {self.destination[1]}")
 
     def move(self):
         trafficLigt = self.lookForLights()
@@ -80,14 +81,73 @@ class Car(Agent):
 
     def setDirection(self):
         contents = self.model.grid.get_cell_list_contents([self.pos])
-        road = [r for r in contents if isinstance(r, Road)]
         trafficLigth = [t for t in contents if isinstance(t, Traffic_Light)]
         if len(trafficLigth) == 1:
             self.direction = self.direction
             return
-        if len(road) == 1:
-            self.direction = road[0].direction
+        road = [r for r in contents if isinstance(r, Road)][0]
+        if road.type == "f":
+            self.direction = road.direction
             return
+        position = self.pos
+        direccionX = -1 if (self.destination[0] - 1 - self.pos[0] < 0) else 1
+        direccionY = -1 if (self.destination[1] - 1 - self.pos[1] < 0) else 1
+        if road.type == "R":
+            if direccionX > 0 and direccionY > 0:
+                self.direction = road.direction
+                return
+            if direccionX > 0 and direccionY < 0:
+                self.direction = self.direction
+                return
+        if road.type == "r":
+            if direccionX > 0 and direccionY < 0:
+                self.direction = road.direction
+                return
+            else:
+                self.direction = self.direction
+                return
+        if road.type == "L":
+            if direccionX < 0 and direccionY > 0:
+                self.direction = road.direction
+                return
+            if direccionX > 0 and direccionY < 0:
+                self.direction = self.direction
+                return
+        if road.type == "l":
+            if direccionX < 0 and direccionY < 0:
+                self.direction = road.direction
+                return
+            else:
+                self.direction = self.direction
+                return
+        if road.type == "P":
+            if direccionX > 0 and direccionY > 0:
+                self.direction = road.direction
+                return
+            if direccionX > 0 and direccionY < 0:
+                self.direction = self.direction
+                return
+        if road.type == "p":
+            if direccionX < 0 and direccionY > 0:
+                self.direction = road.direction
+                return
+            else:
+                self.direction = self.direction
+                return
+        if road.type == "N":
+            if direccionX > 0 and direccionY < 0:
+                self.direction = road.direction
+                return
+            if direccionX > 0 and direccionY > 0:
+                self.direction = self.direction
+                return
+        if road.type == "n":
+            if direccionX < 0 and direccionY < 0:
+                self.direction = road.direction
+                return
+            else:
+                self.direction = self.direction
+                return
 
     def getRoads(self):
         possible_boxes = self.model.grid.get_neighborhood(self.pos, False, False)
@@ -164,7 +224,7 @@ class Road(Agent):
     Road agent. Determines where the cars can move, and in which direction.
     """
 
-    def __init__(self, unique_id, model, direction=[0, 0]):
+    def __init__(self, unique_id, model, type, direction=[0, 0]):
         """
         Creates a new road.
         Args:
@@ -174,6 +234,7 @@ class Road(Agent):
         """
         super().__init__(unique_id, model)
         self.direction = direction
+        self.type = type
 
     def step(self):
         pass
