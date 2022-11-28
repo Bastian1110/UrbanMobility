@@ -24,6 +24,10 @@ class Car(Agent):
         print(f"X {self.destination[0]} Y {self.destination[1]}")
 
     def move(self):
+        home = self.lookForGoal()
+        if home:
+            self.model.grid.move_agent(self,self.destination)
+            return
         trafficLigt = self.lookForLights()
         if not trafficLigt[0]:
             carsNear = self.lookForCars()
@@ -161,6 +165,14 @@ class Car(Agent):
             road = [r for r in contents if isinstance(r, Road)]
             roads = roads + road
         return roads
+    
+    def lookForGoal(self):
+        position = self.pos
+        possible_destination = self.model.grid.get_neighborhood(position, False, False)
+        if self.destination in possible_destination:
+            return True
+        else:
+            return False
 
     def step(self):
         if not self.isMoving:
@@ -169,7 +181,11 @@ class Car(Agent):
             self.setDirection()
             self.isMoving = True
             return
-        self.move()
+        if self.pos == self.destination:
+            self.model.grid.remove_agent(self)
+            self.model.schedule.remove(self)
+        else:
+            self.move()
 
 
 class Traffic_Light(Agent):
