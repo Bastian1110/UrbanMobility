@@ -121,28 +121,32 @@ class Car(Agent):
                 self.direction = self.direction
                 return
         if road.type == "P":
-            if direccionX > 0 and direccionY > 0:
+            if direccionX > 0 and direccionY > 0 and self.destination[1] > 1:
                 self.direction = road.direction
                 return
             if direccionX > 0 and direccionY < 0:
                 self.direction = self.direction
                 return
         if road.type == "p":
-            if direccionX < 0 and direccionY > 0:
+            if direccionX < 0 and direccionY > 0 and self.destination[1] > 1:
                 self.direction = road.direction
                 return
             else:
                 self.direction = self.direction
                 return
         if road.type == "N":
-            if direccionX > 0 and direccionY < 0:
+            if direccionX > 0 and direccionY < 0 and self.destination[1] < self.model.height - 1:
                 self.direction = road.direction
+                print(self.model.height-1)
+                print(self.destination[1])
                 return
             if direccionX > 0 and direccionY > 0:
                 self.direction = self.direction
                 return
         if road.type == "n":
-            if direccionX < 0 and direccionY < 0:
+            if direccionX < 0 and direccionY < 0 and self.destination[1] < self.model.height - 2:
+                print(self.model.height-1)
+                print(self.destination[1])
                 self.direction = road.direction
                 return
             else:
