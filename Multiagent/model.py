@@ -30,7 +30,7 @@ class UrbanMobility(Model):
 
             for r, row in enumerate(lines):
                 for c, col in enumerate(row):
-                    if col in ["v", "^", ">", "<"]:
+                    if col in list("<>^v"):
                         agent = Road(
                             f"r_{r*self.width+c}", self, "f", dataDictionary[col]
                         )
