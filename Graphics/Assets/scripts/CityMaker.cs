@@ -7,8 +7,10 @@ using UnityEngine;
 public class CityMaker : MonoBehaviour
 {
     public List<GameObject> buildingsPrefab;
+    public List<GameObject> ForestPrefab;
     [SerializeField] TextAsset layout;
     [SerializeField] GameObject roadPrefab;
+    
     
     //[SerializeField] GameObject buildingPrefab;
     [SerializeField] GameObject semaphorePrefab;
@@ -87,6 +89,14 @@ public class CityMaker : MonoBehaviour
             } else if (tiles[i] == '\n') {
                 x = 0;
                 y -= 1;
+            } else if (tiles[i] == 'F'){
+                randomIndex = Random.Range(0, ForestPrefab.Count());
+                position = new Vector3(x * tileSize, 0, y * tileSize);
+                tile = Instantiate(ForestPrefab[randomIndex], position, Quaternion.identity);
+                Vector3 scale = ForestPrefab[randomIndex].transform.localScale;
+                tile.transform.localScale = scale;
+                tile.transform.parent = transform;
+                x += 1;
             }
         }
 
