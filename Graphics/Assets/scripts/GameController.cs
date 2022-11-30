@@ -141,7 +141,7 @@ public class GameController : MonoBehaviour
 
             foreach (AgentData agent in carsData.positions)
             {
-                Vector3 newAgentPosition = new Vector3(agent.x + 0.9f, agent.y - 0.95f, agent.z + 0.15f);
+                Vector3 newAgentPosition = new Vector3(agent.x, agent.y - 0.95f, agent.z);
 
                 if (!started)
                 {
