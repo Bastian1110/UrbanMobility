@@ -10,6 +10,7 @@ public class AgentData
     public string id;
     public float x, y, z;
 
+
     public AgentData(string id, float x, float y, float z)
     {
         this.id = id;
@@ -140,7 +141,7 @@ public class GameController : MonoBehaviour
 
             foreach (AgentData agent in carsData.positions)
             {
-                Vector3 newAgentPosition = new Vector3(agent.x, agent.y - 0.95f, agent.z);
+                Vector3 newAgentPosition = new Vector3(agent.x + 0.9f, agent.y - 0.95f, agent.z + 0.15f);
 
                 if (!started)
                 {
