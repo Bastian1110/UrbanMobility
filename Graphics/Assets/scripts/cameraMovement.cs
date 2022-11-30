@@ -39,14 +39,17 @@ public class cameraMovement : MonoBehaviour
      {
         transform.Translate(new Vector3(0,0,-speed * Time.deltaTime));
      }
+     if(Input.GetMouseButton(0)){
+        x = Input.GetAxis("Mouse X");
+        y = Input.GetAxis("Mouse Y");
 
-    x = Input.GetAxis("Mouse X");
-    y = Input.GetAxis("Mouse Y");
+        rotate = new Vector3 (y, x * -1, 0);
+        transform.eulerAngles = transform.eulerAngles - rotate;
 
-    rotate = new Vector3 (y, x * -1, 0);
-    transform.eulerAngles = transform.eulerAngles - rotate;
+        transform.eulerAngles += rotate * speed;
+     }
 
-    transform.eulerAngles += rotate * speed;
+    
 
 
     }
