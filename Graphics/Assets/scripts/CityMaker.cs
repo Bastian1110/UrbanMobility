@@ -40,8 +40,8 @@ public class CityMaker : MonoBehaviour
         // To draw from the top, find the rows of the file
         // and move down
         // Remove the last enter, and one more to start at 0
-        int y = tiles.Split('\n').Length - 2;
-        //Debug.Log(y);
+        int y = tiles.Split('\n').Length - 1;
+        Debug.Log(y);
 
         Vector3 position;
         GameObject tile;
