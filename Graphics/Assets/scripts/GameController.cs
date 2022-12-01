@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -9,6 +10,7 @@ public class AgentData
 {
     public string id;
     public float x, y, z;
+    
 
 
     public AgentData(string id, float x, float y, float z)
@@ -34,13 +36,16 @@ public class GameController : MonoBehaviour
     string initEndpoint = "/init";
     string updateEndpoint = "/update";
 
+    public List<GameObject> carsPrefabs;
+    private int randomIndex;
+
     AgentsData carsData;
     Dictionary<string, GameObject> agents;
     Dictionary<string, Vector3> prevPositions, currPositions;
 
     bool updated = false, started = false;
 
-    public GameObject carPrefab, floor;
+    public GameObject floor;
     public int NCars, width, height;
     public float timeToUpdate = 0.1f;
     private float timer, dt;
@@ -146,7 +151,8 @@ public class GameController : MonoBehaviour
                 if (!started)
                 {
                     prevPositions[agent.id] = newAgentPosition;
-                    agents[agent.id] = Instantiate(carPrefab, newAgentPosition, Quaternion.identity);
+                    randomIndex = UnityEngine.Random.Range(0, carsPrefabs.Count());
+                    agents[agent.id] = Instantiate(carsPrefabs[randomIndex], newAgentPosition, Quaternion.identity);
                 }
                 else
                 {
