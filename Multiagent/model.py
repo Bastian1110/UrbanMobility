@@ -27,7 +27,6 @@ class UrbanMobility(Model):
 
             self.grid = MultiGrid(self.width, self.height, torus=False)
             self.schedule = RandomActivation(self)
-
             for r, row in enumerate(lines):
                 for c, col in enumerate(row):
                     if col in ["v", "^", ">", "<"]:
@@ -43,9 +42,11 @@ class UrbanMobility(Model):
                     elif col in ["S", "s"]:
                         agent = Traffic_Light(
                             f"tl_{r*self.width+c}",
+                            (c, self.height - r - 1),
                             self,
                             False if col == "S" else True,
                             int(dataDictionary[col]),
+                            
                         )
                         self.grid.place_agent(agent, (c, self.height - r - 1))
                         self.schedule.add(agent)

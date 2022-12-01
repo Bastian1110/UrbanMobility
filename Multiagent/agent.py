@@ -193,7 +193,7 @@ class Traffic_Light(Agent):
     Traffic light. Where the traffic lights are in the grid.
     """
 
-    def __init__(self, unique_id, model, state=False, timeToChange=10):
+    def __init__(self, unique_id, loc, model, state=False, timeToChange=10):
         super().__init__(unique_id, model)
         """
         Creates a new Traffic light.
@@ -205,6 +205,35 @@ class Traffic_Light(Agent):
         """
         self.state = state
         self.timeToChange = timeToChange
+        self.pos = loc
+        self.partner = ()
+        self.lookForPartnerLight()
+        self.lookForOpposingLight()
+
+
+    def lookForOpposingLight(self):
+        neighborhood = self.model.grid.get_neighborhood(self.pos,True,False)
+        for cell in neighborhood:
+             content = self.model.grid.get_cell_list_contents([cell])
+             traffic = [r for r in content if isinstance(r, Traffic_Light)]
+             if len(traffic) == 1:
+                if traffic[0] != self.partner:
+                    self.opposingLight = traffic[0]
+
+    def lookForPartnerLight(self):
+        position = (self.pos)
+        print(position)
+        
+        neighborhood = self.model.grid.get_neighborhood(self.pos , False, False)
+        
+        for cell in neighborhood:
+            
+            content = self.model.grid.get_cell_list_contents([cell])
+            traffic = [r for r in content if isinstance(r, Traffic_Light)]
+            if len(traffic) == 1:
+                self.partner = traffic[0]
+                
+        
 
     def step(self):
         """
