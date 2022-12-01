@@ -39,6 +39,27 @@ def getCars():
         return jsonify({"positions": carsPositions})
 
 
+@app.route("/getTrafficLights", methods=["GET"])
+def getTrafficLights():
+    global modelo
+
+    if request.method == "GET":
+        lights = []
+        for (a, x, z) in modelo.grid.coord_iter():
+            for o in a:
+                if isinstance(o, Traffic_Light):
+                    lights.append(
+                        {
+                            "id": str(o.unique_id),
+                            "x": x,
+                            "y": 1,
+                            "z": z,
+                            "state": o.state,
+                        }
+                    )
+        return jsonify({"positions": lights})
+
+
 @app.route("/update", methods=["GET"])
 def updateModel():
     global currentStep, modelo
