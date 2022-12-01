@@ -61,6 +61,9 @@ class UrbanMobility(Model):
                         self.grid.place_agent(agent, (c, self.height - r - 1))
                         self.destinantions.append(agent)
 
+        for semaforo in self.traffic_lights:
+            semaforo.lookForPartnerLight()
+            semaforo.lookForOpposingLight()
         for i in range(cars):
             randomUbication = True
             randomDestination = True
@@ -76,7 +79,10 @@ class UrbanMobility(Model):
 
     def step(self):
         """Advance the model by one step."""
+        """
         if self.schedule.steps % 10 == 0:
             for agent in self.traffic_lights:
                 agent.state = not agent.state
+        """
+        
         self.schedule.step()

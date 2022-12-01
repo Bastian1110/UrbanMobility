@@ -1,4 +1,5 @@
 from mesa import Agent
+import random
 
 
 class Car(Agent):
@@ -206,36 +207,159 @@ class Traffic_Light(Agent):
         self.state = state
         self.timeToChange = timeToChange
         self.pos = loc
-        self.partner = ()
-        self.lookForPartnerLight()
-        self.lookForOpposingLight()
+        self.partner = self
+        self.opposingLight = self
+        self.direction = ()
+        self.firstStep = True
+        self.cars = 0
+        self.asked = False
+        self.counter = self.timeToChange
+        
+    def calculateCars(self):
+        cars = 0
+        for i in range(6):
+            x = self.pos[0] + ((i+1)*self.direction[0])
+            y = self.pos[1] + ((i+1)*self.direction[1])
+            if x < 0 or x > 21:
+                break
+            content = self.model.grid.get_cell_list_contents([(x,y)])
+            possible_car = [r for r in content if isinstance(r, Car)]
+            if len(possible_car) > 0:
+                cars = cars + 1
 
+        self.cars = cars
+            
+    def askTochange(self):
+        cars1 = self.cars
+        cars2 = self.opposingLight.cars
+        if cars1 > cars2:
+            self.state = True
+            self.partner.state = True
+            self.opposingLight.state = False
+            self.opposingLight.partner.state = False
+            self.asked = True
+            self.partner.asked = True
+            self.opposingLight.asked = True
+            self.opposingLight.partner.asked = True
+        elif cars2 > cars1:
+            self.state = False
+            self.partner.state = False
+            self.opposingLight.state = True
+            self.opposingLight.partner.state = True
+            self.asked = True
+            self.partner.asked = True
+            self.opposingLight.asked = True
+            self.opposingLight.partner.asked = True
+        elif cars1 == 0 and cars2 == 0:
+            pass
+        elif cars2 == cars1:
+            option = random.randint(0,2)
+            if option == 0:
+                self.state = True
+                self.partner.state = True
+                self.opposingLight.state = False
+                self.opposingLight.partner.state = False               
+            else:
+                self.state = False
+                self.partner.state = False
+                self.opposingLight.state = True
+                self.opposingLight.partner.state = True
+            self.asked = True
+            self.partner.asked = True
+            self.opposingLight.asked = True
+            self.opposingLight.partner.asked = True
+
+
+    def direccionDeLuz(self):
+        neighborhood = self.model.grid.get_neighborhood(self.pos , False, False)
+        horizontal = False
+        vertical = False
+        if len(neighborhood) == 4 or len(neighborhood) == 3:
+            n = 0
+            for cell in neighborhood:
+                content = self.model.grid.get_cell_list_contents([cell])
+                rd = [r for r in content if isinstance(r, Road)]
+                if len(rd) > 0:
+                    if n == 0:
+                        horizontal = True
+                    if n == 1:
+                        vertical = True
+                n = n + 1
+        
+        
+        direc0 = self.pos[0] - self.opposingLight.pos[0]
+        direc1 = self.pos[1] - self.opposingLight.pos[1]
+
+        
+        if direc1 > 0 and direc0 > 0 and horizontal:
+            self.direction = (1,0)
+        elif direc1 > 0 and direc0 > 0 and vertical:
+            self.direction = (0,1)
+        elif direc1 > 0 and direc0 < 0 and vertical:
+            self.direction = (0,1)
+        elif direc1 > 0 and direc0 < 0 and horizontal:
+            self.direction = (-1,0)
+        elif direc1 < 0 and direc0 > 0 and horizontal:
+            self.direction = (1,0)
+        elif direc1 < 0 and direc0 > 0 and vertical:
+            self.direction = (0,-1)
+        elif direc1 < 0 and direc0 < 0 and horizontal:
+            self.direction = (-1,0)
+        elif direc1 < 0 and direc0 < 0 and vertical:
+            self.direction = (0,-1) 
+
+
+        
 
     def lookForOpposingLight(self):
         neighborhood = self.model.grid.get_neighborhood(self.pos,True,False)
+        #print(self.pos)
+        #print(neighborhood)
         for cell in neighborhood:
              content = self.model.grid.get_cell_list_contents([cell])
              traffic = [r for r in content if isinstance(r, Traffic_Light)]
              if len(traffic) == 1:
-                if traffic[0] != self.partner:
+                #print(traffic[0].pos)
+                if traffic[0] != self.partner and traffic[0].pos!= self.pos:
                     self.opposingLight = traffic[0]
 
     def lookForPartnerLight(self):
         position = (self.pos)
-        print(position)
         
         neighborhood = self.model.grid.get_neighborhood(self.pos , False, False)
-        
+        #print(neighborhood)
         for cell in neighborhood:
             
             content = self.model.grid.get_cell_list_contents([cell])
             traffic = [r for r in content if isinstance(r, Traffic_Light)]
             if len(traffic) == 1:
                 self.partner = traffic[0]
+
                 
         
 
     def step(self):
+        if self.firstStep:
+            if self.opposingLight.pos == self.pos or self.opposingLight.pos == self.partner.pos:
+                self.opposingLight = self.partner.opposingLight
+            self.firstStep = False
+            self.direccionDeLuz()
+            print(self.pos)
+            print(self.partner.pos)
+            print(self.opposingLight.pos)
+            print(self.direction)
+            print()
+        
+        self.calculateCars()
+        if self.asked and self.counter == 0:
+            self.asked = False
+            self.counter = self.timeToChange
+        if not(self.asked):
+            self.askTochange()
+        if self.asked:
+            self.counter = self.counter - 1
+
+
         """
         To change the state (green or red) of the traffic light in case you consider the time to change of each traffic light.
         """
