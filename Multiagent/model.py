@@ -27,7 +27,6 @@ class UrbanMobility(Model):
 
             self.grid = MultiGrid(self.width, self.height, torus=False)
             self.schedule = RandomActivation(self)
-
             for r, row in enumerate(lines):
                 for c, col in enumerate(row):
                     if col in list("<>^v"):
@@ -43,9 +42,11 @@ class UrbanMobility(Model):
                     elif col in ["S", "s"]:
                         agent = Traffic_Light(
                             f"tl_{r*self.width+c}",
+                            (c, self.height - r - 1),
                             self,
                             False if col == "S" else True,
                             int(dataDictionary[col]),
+                            
                         )
                         self.grid.place_agent(agent, (c, self.height - r - 1))
                         self.schedule.add(agent)
@@ -60,6 +61,9 @@ class UrbanMobility(Model):
                         self.grid.place_agent(agent, (c, self.height - r - 1))
                         self.destinantions.append(agent)
 
+        for semaforo in self.traffic_lights:
+            semaforo.lookForPartnerLight()
+            semaforo.lookForOpposingLight()
         for i in range(cars):
             randomUbication = True
             randomDestination = True
@@ -75,7 +79,10 @@ class UrbanMobility(Model):
 
     def step(self):
         """Advance the model by one step."""
+        """
         if self.schedule.steps % 10 == 0:
             for agent in self.traffic_lights:
                 agent.state = not agent.state
+        """
+        
         self.schedule.step()
