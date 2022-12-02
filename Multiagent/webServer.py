@@ -34,7 +34,13 @@ def getCars():
             for o in a:
                 if isinstance(o, Car):
                     carsPositions.append(
-                        {"id": str(o.unique_id), "x": x, "y": 1, "z": z}
+                        {
+                            "id": str(o.unique_id),
+                            "x": x,
+                            "y": 1,
+                            "z": z,
+                            "state": o.state,
+                        }
                     )
         return jsonify({"positions": carsPositions})
 

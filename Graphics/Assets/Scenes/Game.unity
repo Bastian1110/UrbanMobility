@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028346, g: 0.22571373, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028305, g: 0.22571313, b: 0.3069213, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -153,11 +153,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverUrl: http://localhost:8080
+  tlPrefab: {fileID: 7937906614440596860, guid: 113f28b767f8444eea3c56975e2ade70, type: 3}
   carsPrefabs: []
   floor: {fileID: 871244828}
-  NCars: 10
-  width: 24
-  height: 25
+  NCars: 5
+  width: 23
+  height: 24
   timeToUpdate: 0.25
 --- !u!4 &673697159
 Transform:
@@ -312,7 +313,7 @@ MonoBehaviour:
   - {fileID: 4331025181959255155, guid: ec06ba3bd1bc05c48875182d5a75726a, type: 3}
   layout: {fileID: 4900000, guid: 4ff67db8d1532e1449f674a527a55c8b, type: 3}
   roadPrefab: {fileID: 6524976388547585824, guid: 84db1e3e72ce6e24f9bcc84024f82e81, type: 3}
-  semaphorePrefab: {fileID: 2505164698199050357, guid: 283f1855dddb06547b36c87f2c47a173, type: 3}
+  semaphorePrefab: {fileID: 6524976388547585824, guid: 84db1e3e72ce6e24f9bcc84024f82e81, type: 3}
   tileSize: 1
 --- !u!4 &871244830
 Transform:

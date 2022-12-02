@@ -10,15 +10,16 @@ public class AgentData
 {
     public string id;
     public float x, y, z;
-    
+    public bool state;
 
 
-    public AgentData(string id, float x, float y, float z)
+    public AgentData(string id, float x, float y, float z, bool state)
     {
         this.id = id;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.state = state;
     }
 }
 
@@ -33,6 +34,7 @@ public class GameController : MonoBehaviour
 {
     public string serverUrl = "http://localhost:8080";
     string getCarsEndpoint = "/getCars";
+    string getTLEndpoint = "/getTrafficLights";
     string initEndpoint = "/init";
     string updateEndpoint = "/update";
 
@@ -40,12 +42,16 @@ public class GameController : MonoBehaviour
     private int randomIndex;
 
     AgentsData carsData;
-    Dictionary<string, GameObject> agents;
+    AgentsData tlData;
+    Dictionary<string, GameObject> agents, tlAgents;
     Dictionary<string, Vector3> prevPositions, currPositions;
+    Dictionary<string, bool> currTLState; 
 
     bool updated = false, started = false;
 
-    public GameObject floor;
+    public GameObject tlPrefab, floor;
+
+
     public int NCars, width, height;
     public float timeToUpdate = 0.1f;
     private float timer, dt;
@@ -54,11 +60,15 @@ public class GameController : MonoBehaviour
     void Start()
     {
         carsData = new AgentsData();
+        tlData = new AgentsData();
 
         prevPositions = new Dictionary<string, Vector3>();
         currPositions = new Dictionary<string, Vector3>();
 
+        currTLState = new Dictionary<string, bool>();
+
         agents = new Dictionary<string, GameObject>();
+        tlAgents = new Dictionary<string, GameObject>();
 
         floor.transform.localScale = new Vector3((float)width / 10, 1, (float)height / 10);
         floor.transform.localPosition = new Vector3((float)width / 2 - 0.5f, 1, (float)height / 2 - 0.5f);
@@ -95,6 +105,18 @@ public class GameController : MonoBehaviour
                 agents[agent.Key].transform.localPosition = interpolated;
                 if (direction != Vector3.zero) agents[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
             }
+
+            foreach (var agent in currTLState)
+            {
+                if(agent.Value == false)
+                {
+                    tlAgents[agent.Key].GetComponent<Renderer>().materials[0].color = Color.red;
+                }
+                else
+                {
+                    tlAgents[agent.Key].GetComponent<Renderer>().materials[0].color = Color.green;
+                }
+            }
         }
     }
 
@@ -108,6 +130,7 @@ public class GameController : MonoBehaviour
         else
         {
             StartCoroutine(GetCarsData());
+            StartCoroutine(GetTLData());
         }
     }
 
@@ -130,6 +153,7 @@ public class GameController : MonoBehaviour
             Debug.Log("Configuration upload complete!");
             Debug.Log("Getting Agents positions");
             StartCoroutine(GetCarsData());
+            StartCoroutine(GetTLData());
         }
     }
 
@@ -147,7 +171,6 @@ public class GameController : MonoBehaviour
             foreach (AgentData agent in carsData.positions)
             {
                 Vector3 newAgentPosition = new Vector3(agent.x, agent.y - 0.95f, agent.z);
-
                 if (!started)
                 {
                     prevPositions[agent.id] = newAgentPosition;
@@ -156,10 +179,47 @@ public class GameController : MonoBehaviour
                 }
                 else
                 {
-                    Vector3 currentPosition = new Vector3();
-                    if (currPositions.TryGetValue(agent.id, out currentPosition))
-                        prevPositions[agent.id] = currentPosition;
-                    currPositions[agent.id] = newAgentPosition;
+                    if(agent.state == false)
+                    {
+                        Destroy(agents[agent.id]);
+                        prevPositions.Remove(agent.id);
+                        currPositions.Remove(agent.id);
+                        agents.Remove(agent.id);
+                    }
+                    else
+                    {
+                        Vector3 currentPosition = new Vector3();
+                        if (currPositions.TryGetValue(agent.id, out currentPosition))
+                            prevPositions[agent.id] = currentPosition;
+                        currPositions[agent.id] = newAgentPosition;
+                    }
+                }
+            }
+        }
+    }
+
+    IEnumerator GetTLData()
+    {
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getTLEndpoint);
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+            Debug.Log(www.error);
+        else
+        {
+            tlData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
+
+            foreach (AgentData agent in tlData.positions)
+            {
+                if (!started)
+                {
+                    Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                    currTLState[agent.id] = agent.state;
+                    tlAgents[agent.id] = Instantiate(tlPrefab, newAgentPosition, Quaternion.identity);
+                }
+                else
+                {
+                    currTLState[agent.id] = agent.state;
                 }
             }
         }
