@@ -21,13 +21,15 @@ class Car(Agent):
         self.pos = initialPosition
         self.destination = destination
         self.isMoving = False
+        self.state = True
         self.direction = [0, 0]
         print(f"X {self.destination[0]} Y {self.destination[1]}")
 
     def move(self):
         home = self.lookForGoal()
         if home:
-            self.model.grid.move_agent(self,self.destination)
+            self.state = False
+            self.model.grid.move_agent(self, self.destination)
             return
         trafficLigt = self.lookForLights()
         if not trafficLigt[0]:
@@ -140,17 +142,25 @@ class Car(Agent):
                 self.direction = self.direction
                 return
         if road.type == "N":
-            if direccionX > 0 and direccionY < 0 and self.destination[1] < self.model.height - 1:
+            if (
+                direccionX > 0
+                and direccionY < 0
+                and self.destination[1] < self.model.height - 1
+            ):
                 self.direction = road.direction
-                print(self.model.height-1)
+                print(self.model.height - 1)
                 print(self.destination[1])
                 return
             if direccionX > 0 and direccionY > 0:
                 self.direction = self.direction
                 return
         if road.type == "n":
-            if direccionX < 0 and direccionY < 0 and self.destination[1] < self.model.height - 2:
-                print(self.model.height-1)
+            if (
+                direccionX < 0
+                and direccionY < 0
+                and self.destination[1] < self.model.height - 2
+            ):
+                print(self.model.height - 1)
                 print(self.destination[1])
                 self.direction = road.direction
                 return
@@ -166,7 +176,7 @@ class Car(Agent):
             road = [r for r in contents if isinstance(r, Road)]
             roads = roads + road
         return roads
-    
+
     def lookForGoal(self):
         position = self.pos
         possible_destination = self.model.grid.get_neighborhood(position, False, False)
@@ -214,21 +224,21 @@ class Traffic_Light(Agent):
         self.cars = 0
         self.asked = False
         self.counter = self.timeToChange
-        
+
     def calculateCars(self):
         cars = 0
         for i in range(6):
-            x = self.pos[0] + ((i+1)*self.direction[0])
-            y = self.pos[1] + ((i+1)*self.direction[1])
+            x = self.pos[0] + ((i + 1) * self.direction[0])
+            y = self.pos[1] + ((i + 1) * self.direction[1])
             if x < 0 or x > 21:
                 break
-            content = self.model.grid.get_cell_list_contents([(x,y)])
+            content = self.model.grid.get_cell_list_contents([(x, y)])
             possible_car = [r for r in content if isinstance(r, Car)]
             if len(possible_car) > 0:
                 cars = cars + 1
 
         self.cars = cars
-            
+
     def askTochange(self):
         cars1 = self.cars
         cars2 = self.opposingLight.cars
@@ -253,12 +263,12 @@ class Traffic_Light(Agent):
         elif cars1 == 0 and cars2 == 0:
             pass
         elif cars2 == cars1:
-            option = random.randint(0,2)
+            option = random.randint(0, 2)
             if option == 0:
                 self.state = True
                 self.partner.state = True
                 self.opposingLight.state = False
-                self.opposingLight.partner.state = False               
+                self.opposingLight.partner.state = False
             else:
                 self.state = False
                 self.partner.state = False
@@ -269,9 +279,8 @@ class Traffic_Light(Agent):
             self.opposingLight.asked = True
             self.opposingLight.partner.asked = True
 
-
     def direccionDeLuz(self):
-        neighborhood = self.model.grid.get_neighborhood(self.pos , False, False)
+        neighborhood = self.model.grid.get_neighborhood(self.pos, False, False)
         horizontal = False
         vertical = False
         if len(neighborhood) == 4 or len(neighborhood) == 3:
@@ -285,62 +294,57 @@ class Traffic_Light(Agent):
                     if n == 1:
                         vertical = True
                 n = n + 1
-        
-        
+
         direc0 = self.pos[0] - self.opposingLight.pos[0]
         direc1 = self.pos[1] - self.opposingLight.pos[1]
 
-        
         if direc1 > 0 and direc0 > 0 and horizontal:
-            self.direction = (1,0)
+            self.direction = (1, 0)
         elif direc1 > 0 and direc0 > 0 and vertical:
-            self.direction = (0,1)
+            self.direction = (0, 1)
         elif direc1 > 0 and direc0 < 0 and vertical:
-            self.direction = (0,1)
+            self.direction = (0, 1)
         elif direc1 > 0 and direc0 < 0 and horizontal:
-            self.direction = (-1,0)
+            self.direction = (-1, 0)
         elif direc1 < 0 and direc0 > 0 and horizontal:
-            self.direction = (1,0)
+            self.direction = (1, 0)
         elif direc1 < 0 and direc0 > 0 and vertical:
-            self.direction = (0,-1)
+            self.direction = (0, -1)
         elif direc1 < 0 and direc0 < 0 and horizontal:
-            self.direction = (-1,0)
+            self.direction = (-1, 0)
         elif direc1 < 0 and direc0 < 0 and vertical:
-            self.direction = (0,-1) 
-
-
-        
+            self.direction = (0, -1)
 
     def lookForOpposingLight(self):
-        neighborhood = self.model.grid.get_neighborhood(self.pos,True,False)
-        #print(self.pos)
-        #print(neighborhood)
+        neighborhood = self.model.grid.get_neighborhood(self.pos, True, False)
+        # print(self.pos)
+        # print(neighborhood)
         for cell in neighborhood:
-             content = self.model.grid.get_cell_list_contents([cell])
-             traffic = [r for r in content if isinstance(r, Traffic_Light)]
-             if len(traffic) == 1:
-                #print(traffic[0].pos)
-                if traffic[0] != self.partner and traffic[0].pos!= self.pos:
+            content = self.model.grid.get_cell_list_contents([cell])
+            traffic = [r for r in content if isinstance(r, Traffic_Light)]
+            if len(traffic) == 1:
+                # print(traffic[0].pos)
+                if traffic[0] != self.partner and traffic[0].pos != self.pos:
                     self.opposingLight = traffic[0]
 
     def lookForPartnerLight(self):
-        position = (self.pos)
-        
-        neighborhood = self.model.grid.get_neighborhood(self.pos , False, False)
-        #print(neighborhood)
+        position = self.pos
+
+        neighborhood = self.model.grid.get_neighborhood(self.pos, False, False)
+        # print(neighborhood)
         for cell in neighborhood:
-            
+
             content = self.model.grid.get_cell_list_contents([cell])
             traffic = [r for r in content if isinstance(r, Traffic_Light)]
             if len(traffic) == 1:
                 self.partner = traffic[0]
 
-                
-        
-
     def step(self):
         if self.firstStep:
-            if self.opposingLight.pos == self.pos or self.opposingLight.pos == self.partner.pos:
+            if (
+                self.opposingLight.pos == self.pos
+                or self.opposingLight.pos == self.partner.pos
+            ):
                 self.opposingLight = self.partner.opposingLight
             self.firstStep = False
             self.direccionDeLuz()
@@ -349,16 +353,15 @@ class Traffic_Light(Agent):
             print(self.opposingLight.pos)
             print(self.direction)
             print()
-        
+
         self.calculateCars()
         if self.asked and self.counter == 0:
             self.asked = False
             self.counter = self.timeToChange
-        if not(self.asked):
+        if not (self.asked):
             self.askTochange()
         if self.asked:
             self.counter = self.counter - 1
-
 
         """
         To change the state (green or red) of the traffic light in case you consider the time to change of each traffic light.
