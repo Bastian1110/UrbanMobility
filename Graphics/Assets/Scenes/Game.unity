@@ -153,10 +153,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverUrl: http://localhost:8080
+  carsPrefabs:
+  - {fileID: 6155883862948073783, guid: 52961bce9ea07144d987c34cb0ef007c, type: 3}
+  - {fileID: 8766104450036304941, guid: 24cc3137427b58644bd002ae2425011f, type: 3}
   tlPrefab: {fileID: 7937906614440596860, guid: 113f28b767f8444eea3c56975e2ade70, type: 3}
-  carsPrefabs: []
   floor: {fileID: 871244828}
-  NCars: 5
+  NCars: 10
   width: 23
   height: 24
   timeToUpdate: 0.25

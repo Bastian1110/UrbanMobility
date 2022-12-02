@@ -230,7 +230,7 @@ class Traffic_Light(Agent):
         for i in range(6):
             x = self.pos[0] + ((i + 1) * self.direction[0])
             y = self.pos[1] + ((i + 1) * self.direction[1])
-            if x < 0 or x > 21:
+            if x < 0 or x > 23:
                 break
             content = self.model.grid.get_cell_list_contents([(x, y)])
             possible_car = [r for r in content if isinstance(r, Car)]
